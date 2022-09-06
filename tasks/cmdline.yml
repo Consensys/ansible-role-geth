@@ -1,0 +1,97 @@
+---
+- name: Add basics to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --verbosity {{geth_log_verbosity}}
+      --datadir {{geth_data_dir}}
+      --syncmode {{geth_sync_mode}}
+      --port {{geth_p2p_port}}
+      --identity {{geth_identity}}
+
+- name: Add nodekey to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --nodekey {{geth_node_private_key_file}}
+  when: geth_node_private_key_file != ""
+
+- name: Add networkid to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --networkid {{ geth_network_id }}
+  when: geth_network_id != ""
+
+- name: Add metrics to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --metrics --pprof
+      --pprof.addr {{ geth_metrics_host}}
+      --pprof.port {{ geth_metrics_port}}
+  when: geth_metrics_enabled|bool == True
+
+- name: Add miner to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --mine
+      --emitcheckpoints
+      --miner.threads {{geth_miner_threads}}
+  when: geth_miner_enabled|bool == True
+
+- name: Add miner etherbase to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --miner.etherbase {{geth_miner_etherbase}}
+  when: (geth_miner_enabled|bool == True) and
+        (geth_miner_etherbase != 0)
+
+- name: Add RPC to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --http
+      --http.addr {{geth_http_host}}
+      --http.port {{geth_http_port}}
+      --http.corsdomain '{{geth_http_cors_origins|map('to_json')|join(',')}}'
+      --http.vhosts '{{geth_http_virtual_hosts|map('to_json')|join(',')}}'
+      --http.api {{geth_http_api|map('to_json')|join(',')}}
+  when: geth_http_enabled|bool == True
+
+- name: Add WS to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --ws
+      --ws.addr {{geth_ws_host}}
+      --ws.port {{geth_ws_port}}
+      --ws.origins '{{geth_ws_origins|map('to_json')|join(',')}}'
+      --ws.rpcprefix '{{geth_ws_rpcprefix}}'
+      --ws.api {{geth_ws_api|map('to_json')|join(',')}}
+  when: geth_ws_enabled|bool == True
+
+- name: Add accounts to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --geth_unlock {{geth_unlock}}
+      --geth_account_password_file {{geth_account_password_file}}
+  when: geth_account_password_file != ""
+
+- name: Add custom cmdline_args to the list
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      {{geth_user_cmdline_args|map('to_json')|join(' ')|regex_replace('"','')}}
+  when: geth_user_cmdline_args != ""
+
+- name: Sanitize cmdline_args
+  set_fact:
+    geth_cmdline_args: "{{geth_cmdline_args | replace('\n', '') | replace('\"', '')}}"
+
+- name: Show cmdline_args
+  debug:
+    msg: "{{geth_cmdline_args}}"

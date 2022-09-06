@@ -1,0 +1,41 @@
+---
+- name: Include OS and distribution specific variables
+  include_vars: "{{ item }}"
+  with_first_found:
+    - files:
+        - "{{ ansible_distribution|lower }}.yml"
+        - "{{ ansible_os_family|lower }}.yml"
+      skip: true
+
+- name: Set architecture
+  set_fact:
+    geth_architecture: "darwin"
+  when: ansible_os_family == "Darwin"
+
+- name: Currently architecture supported
+  block:
+    - name: Check that we are running on linux
+      fail:
+        msg: Please run this on linux, OSX is not yet supported
+      when: ansible_os_family == "Darwin"
+    - name: Check that a valid genesis file path has been provided
+      fail:
+        msg: Please provide a valid path to the genesis file
+      when: geth_genesis_path == "" and geth_init_database
+
+- name: Install geth
+  include_tasks: "install.yml"
+
+- name: Get IP address to bind to if not provided
+  include_tasks: "network.yml"
+  when: not geth_host_ip
+
+# also init the db
+- name: Create config
+  include_tasks: "config.yml"
+
+- name: Create cmd line args
+  include_tasks: "cmdline.yml"
+
+- name: Create geth service
+  include_tasks: "service.yml"

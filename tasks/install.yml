@@ -1,0 +1,77 @@
+---
+- name: Ensure geth group exists
+  group:
+    name: "{{ geth_group }}"
+    state: present
+  become: true
+
+- name: Create geth user
+  user:
+    comment:  geth client user
+    name: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+  become: true
+
+- name: Create base directory
+  file:
+    path: "{{ geth_base_dir }}"
+    state: directory
+    owner: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+  become: true
+
+- name: Create install directory
+  file:
+    path: "{{ geth_install_dir }}"
+    state: directory
+    owner: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+  become: true
+
+- name: Create log directory
+  file:
+    path: "{{ geth_log_dir }}"
+    state: directory
+    owner: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+  become: true
+
+- name: Setup logrotate
+  template:
+    src: "logrotate/geth"
+    dest: "/etc/logrotate.d/geth"
+  become: true
+
+- name: Extract geth source to install directory
+  unarchive:
+    src: "{{ geth_download_url }}"
+    remote_src: "{{ true }}"
+    dest: "{{ geth_install_dir }}"
+    owner: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+    mode: '0775'
+  become: true
+  register: extract_src
+
+- name: Set updated optionally to trigger a systemd restart at the end
+  set_fact:
+    geth_state_updates: "{{ geth_state_updates + ['geth.install_dir'] }}"
+  when: extract_src is changed
+
+# will throw error the first time you install since the service isnt present
+- name: Stop geth systemd service if running
+  service:
+    name: geth
+    state: stopped
+  when: ( extract_src is changed ) and
+    ( geth_managed_service ) and
+    ( ansible_os_family != "Darwin" )
+  become: true
+  ignore_errors: true
+
+- name: Create a symlink to current
+  file:
+    src: "{{ geth_install_dir }}/geth-linux-amd64-{{geth_version}}-{{geth_git_hash}}"
+    dest: "{{ geth_current_dir }}"
+    state: link
+  become: true

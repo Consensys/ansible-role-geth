@@ -1,0 +1,75 @@
+---
+- name: Get the default ipv4 address
+  set_fact:
+    geth_default_ip: >-
+      {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] if
+      hostvars[inventory_hostname]['ansible_default_ipv4']['address'] is
+      defined else '127.0.0.1' }}
+    aws_ip_output:
+      status: 0
+    gcp_ip_output:
+      status: 0
+    azure_ip_output:
+      status: 0
+
+- name: Use the public ip if discovery is set to use public
+  block:
+    - name: Check if running on AWS
+      uri:
+        url: http://169.254.169.254/latest/meta-data/public-ipv4
+        method: GET
+        return_content: yes
+        status_code: 200
+      register: aws_ip_output
+      ignore_errors: True
+
+    - name: Set the host ip if we are in AWS
+      set_fact:
+        geth_host_ip: "{{ aws_ip_output.content }}"
+      when: aws_ip_output.status == 200
+
+    - name: Check if running on Azure
+      uri:
+        url: http://169.254.169.254/metadata/instance/network/interface/0/ipv4/ipAddress/0/publicIpAddress?api-version=2017-08-01&format=text
+        method: GET
+        headers:
+          Metadata: true
+        return_content: yes
+        status_code: 200
+      register: azure_public_ip_output
+      ignore_errors: True
+      when: ( aws_ip_output.status != 200 )
+
+    - name: Set the host ip if we are in Azure
+      set_fact:
+        geth_host_ip: "{{ azure_ip_output.content }}"
+      when: ( aws_ip_output.status != 200 ) and
+        ( azure_ip_output.status == 200 )
+
+    - name: Check if running on GCP
+      uri:
+        url: http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/external-ip
+        method: GET
+        headers:
+          Metadata-Flavor: Google
+        return_content: yes
+        status_code: 200
+      register: gcp_ip_output
+      ignore_errors: True
+      when: ( aws_ip_output.status != 200 ) and
+        ( azure_ip_output.status != 200 )
+
+    - name: Set the host ip if we are in GCP
+      set_fact:
+        geth_host_ip: "{{ gcp_ip_output.content }}"
+      when: ( aws_ip_output.status != 200 ) and
+        ( azure_ip_output.status != 200 ) and
+        ( gcp_ip_output.status == 200 )
+  when: ( geth_discovery_public_ip|bool == True ) and
+    ( geth_host_ip == "" )
+  ignore_errors: yes
+
+- name: Fallback to the ansible default ip
+  set_fact:
+    geth_host_ip: "{{ geth_default_ip }}"
+  when: geth_host_ip == ""

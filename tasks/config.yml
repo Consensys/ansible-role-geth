@@ -1,0 +1,23 @@
+---
+#
+- name: Create configuration directory
+  file:
+    path: "{{ geth_config_dir }}"
+    state: directory
+    owner: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+    recurse: yes
+  become: true
+
+- name: Create data directory
+  file:
+    path: "{{ geth_data_dir }}"
+    state: directory
+    owner: "{{ geth_user }}"
+    group: "{{ geth_group }}"
+    recurse: no
+  become: true
+
+- name: Init the database
+  command: "{{geth_current_dir}}/geth init --datadir {{geth_data_dir}} {{geth_genesis_path}}"
+  when: geth_init_database
