@@ -5,7 +5,7 @@ geth_group: "{{ geth_user }}"
 geth_architecture: "linux"
 geth_env_opts: []
 # default to use the private ip in cloud, set this to true to use the public ip
-geth_discovery_public_ip: "false"
+geth_discovery_public_ip: "true"
 # internal state to maintain idempotency
 geth_state_updates: []
 # Version to install
@@ -17,11 +17,9 @@ geth_install_dir: "{{ geth_base_dir }}"
 geth_current_dir: "{{ geth_base_dir }}/current"
 geth_node_private_key_file: ""
 geth_config_dir: "/etc/geth"
-geth_config_template: "config.toml.j2"
 geth_data_dir: "{{ geth_base_dir }}/data"
 geth_log_dir: "/var/log/geth"
 geth_ipc_file: "{{ geth_base_dir }}/geth.ipc"
-geth_profile_file: "/etc/profile.d/geth-path.sh"
 geth_genesis_path: ""
 
 # Managed service config
@@ -29,12 +27,16 @@ geth_managed_service: true
 geth_systemd_state: restarted
 geth_systemd_template: geth.service.j2
 geth_systemd_dir: /etc/systemd/system
-geth_init_database: false
 
 # geth config file args
+geth_network: "mainnet"
 geth_network_id: ""
 geth_sync_mode: snap
-geth_node_identity: "GethNode"
+geth_identity: "GethNode"
+geth_authrpc_jwtsecret: "/path/to/jwtsecret"
+geth_authrpc_addr: "127.0.0.1"
+geth_authrpc_port: 8551
+geth_authrpc_vhosts: "*"
 geth_no_usb: "true"
 geth_http_enabled: "true"
 geth_http_host: "127.0.0.1"
@@ -48,23 +50,13 @@ geth_ws_port: 8546
 geth_ws_origins: ["*"]
 geth_ws_api: ["admin", "eth", "debug", "miner", "net", "txpool", "personal", "web3"]
 geth_ws_rpcprefix: "/"
-geth_graphql_enabled: "true"
-geth_graphql_virtual_hosts: ["*"]
-geth_graphql_cors_origins: ["*"]
-geth_max_peers: 50
-geth_bootnodes: []
 geth_p2p_port: 30303
-geth_identity: "GethNode"
 ## CLI args
 # --nat extip:{{geth_host_ip}}
 geth_host_ip: ""
 geth_default_ip: "127.0.0.1"
 # --verbosity # 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail
 geth_log_verbosity: 3
-# --mine --minerthreads 1 --emitcheckpoints \
-geth_miner_enabled: "false"
-geth_miner_threads: 1
-geth_miner_etherbase: 0
 # --metrics --pprof --pprof.addr 0.0.0.0 --pprof.port 9545 \
 geth_metrics_enabled: "true"
 geth_metrics_host: "0.0.0.0"

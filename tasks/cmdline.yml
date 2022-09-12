@@ -9,6 +9,15 @@
       --port {{geth_p2p_port}}
       --identity {{geth_identity}}
 
+- name: Add engine settings to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --authrpc.jwtsecret {{geth_authrpc_jwtsecret}}
+      --authrpc.addr value {{geth_authrpc_addr}}
+      --authrpc.port value {{geth_authrpc_port}}
+      --authrpc.vhosts value'{{geth_authrpc_vhosts|map('to_json')|join(',')}}'
+
 - name: Add nodekey to the cmdline_args
   set_fact:
     geth_cmdline_args: >
@@ -23,6 +32,13 @@
       --networkid {{ geth_network_id }}
   when: geth_network_id != ""
 
+- name: Add network to the cmdline_args
+  set_fact:
+    geth_cmdline_args: >
+      {{geth_cmdline_args}}
+      --{{ geth_network }}
+  when: geth_network != ""
+
 - name: Add metrics to the cmdline_args
   set_fact:
     geth_cmdline_args: >
@@ -31,23 +47,6 @@
       --pprof.addr {{ geth_metrics_host}}
       --pprof.port {{ geth_metrics_port}}
   when: geth_metrics_enabled|bool == True
-
-- name: Add miner to the cmdline_args
-  set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
-      --mine
-      --emitcheckpoints
-      --miner.threads {{geth_miner_threads}}
-  when: geth_miner_enabled|bool == True
-
-- name: Add miner etherbase to the cmdline_args
-  set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
-      --miner.etherbase {{geth_miner_etherbase}}
-  when: (geth_miner_enabled|bool == True) and
-        (geth_miner_etherbase != 0)
 
 - name: Add RPC to the cmdline_args
   set_fact:

@@ -17,7 +17,3 @@
     group: "{{ geth_group }}"
     recurse: no
   become: true
-
-- name: Init the database
-  command: "{{geth_current_dir}}/geth init --datadir {{geth_data_dir}} {{geth_genesis_path}}"
-  when: geth_init_database
