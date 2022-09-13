@@ -18,10 +18,6 @@
       fail:
         msg: Please run this on linux, OSX is not yet supported
       when: ansible_os_family == "Darwin"
-    - name: Check that a valid genesis file path has been provided
-      fail:
-        msg: Please provide a valid path to the genesis file
-      when: geth_genesis_path == "" and geth_init_database
 
 - name: Install geth
   include_tasks: "install.yml"

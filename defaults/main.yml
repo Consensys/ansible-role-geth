@@ -20,7 +20,6 @@ geth_config_dir: "/etc/geth"
 geth_data_dir: "{{ geth_base_dir }}/data"
 geth_log_dir: "/var/log/geth"
 geth_ipc_file: "{{ geth_base_dir }}/geth.ipc"
-geth_genesis_path: ""
 
 # Managed service config
 geth_managed_service: true
