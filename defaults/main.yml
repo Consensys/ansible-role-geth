@@ -28,7 +28,8 @@ geth_systemd_template: geth.service.j2
 geth_systemd_dir: /etc/systemd/system
 
 # geth config file args
-geth_network: "mainnet"
+# safe default network so it doesn't blow up
+geth_network: ""
 geth_network_id: ""
 geth_sync_mode: snap
 geth_identity: "GethNode"

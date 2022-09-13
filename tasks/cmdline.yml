@@ -7,16 +7,16 @@
       --datadir {{geth_data_dir}}
       --syncmode {{geth_sync_mode}}
       --port {{geth_p2p_port}}
-      --identity {{geth_identity}}
+      --identity '{{geth_identity}}'
 
 - name: Add engine settings to the cmdline_args
   set_fact:
     geth_cmdline_args: >
       {{geth_cmdline_args}}
-      --authrpc.jwtsecret {{geth_authrpc_jwtsecret}}
-      --authrpc.addr value {{geth_authrpc_addr}}
-      --authrpc.port value {{geth_authrpc_port}}
-      --authrpc.vhosts value'{{geth_authrpc_vhosts|map('to_json')|join(',')}}'
+      --authrpc.jwtsecret '{{geth_authrpc_jwtsecret}}'
+      --authrpc.addr '{{geth_authrpc_addr}}'
+      --authrpc.port {{geth_authrpc_port}}
+      --authrpc.vhosts '{{geth_authrpc_vhosts|map('to_json')|join(',')}}'
 
 - name: Add nodekey to the cmdline_args
   set_fact:
@@ -53,7 +53,7 @@
     geth_cmdline_args: >
       {{geth_cmdline_args}}
       --http
-      --http.addr {{geth_http_host}}
+      --http.addr '{{geth_http_host}}''
       --http.port {{geth_http_port}}
       --http.corsdomain '{{geth_http_cors_origins|map('to_json')|join(',')}}'
       --http.vhosts '{{geth_http_virtual_hosts|map('to_json')|join(',')}}'
@@ -65,7 +65,7 @@
     geth_cmdline_args: >
       {{geth_cmdline_args}}
       --ws
-      --ws.addr {{geth_ws_host}}
+      --ws.addr '{{geth_ws_host}}'
       --ws.port {{geth_ws_port}}
       --ws.origins '{{geth_ws_origins|map('to_json')|join(',')}}'
       --ws.rpcprefix '{{geth_ws_rpcprefix}}'
