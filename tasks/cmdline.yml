@@ -4,7 +4,7 @@
     geth_cmdline_args: >
       {{geth_cmdline_args}}
       --verbosity {{geth_log_verbosity}}
-      --datadir {{geth_data_dir}}
+      --datadir '{{geth_data_dir}}'
       --syncmode {{geth_sync_mode}}
       --port {{geth_p2p_port}}
       --identity '{{geth_identity}}'
@@ -44,7 +44,7 @@
     geth_cmdline_args: >
       {{geth_cmdline_args}}
       --metrics --pprof
-      --pprof.addr {{ geth_metrics_host}}
+      --pprof.addr '{{ geth_metrics_host}}'
       --pprof.port {{ geth_metrics_port}}
   when: geth_metrics_enabled|bool == True
 
@@ -53,7 +53,7 @@
     geth_cmdline_args: >
       {{geth_cmdline_args}}
       --http
-      --http.addr '{{geth_http_host}}''
+      --http.addr '{{geth_http_host}}'
       --http.port {{geth_http_port}}
       --http.corsdomain '{{geth_http_cors_origins|map('to_json')|join(',')}}'
       --http.vhosts '{{geth_http_virtual_hosts|map('to_json')|join(',')}}'
