@@ -9,21 +9,19 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - jessie
-        - stretch
+        - bookworm
+        - bullseye
+        - buster
     - name: Ubuntu
       versions:
-        - xenial
+        - jammy
         - bionic
-        - cosmic
-    - name: EL
-      versions:
-        - 7
+        - xenial
     - name: Fedora
       versions:
-        - 28
-        - 29
-        - 30
+        - 39
+        - 38
+        - 37
   galaxy_tags:
     - geth
     - blockchain
