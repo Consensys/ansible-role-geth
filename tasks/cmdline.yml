@@ -4,7 +4,7 @@
     geth_cmdline_args: >
       {{geth_cmdline_args}}
       --verbosity {{geth_log_verbosity}}
-      --log.json {{ geth_log_json }}
+      --log.format={{ geth_log_format }}
       --datadir '{{geth_data_dir}}'
       --syncmode {{geth_sync_mode}}
       --port {{geth_p2p_port}}
