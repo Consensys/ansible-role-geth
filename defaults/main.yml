@@ -41,14 +41,16 @@ geth_no_usb: "true"
 geth_http_enabled: "true"
 geth_http_host: "127.0.0.1"
 geth_http_port: 8545
-geth_http_api: ["admin", "eth", "debug", "miner", "net", "txpool", "personal", "web3"]
+geth_http_api:
+  ["admin", "eth", "debug", "miner", "net", "txpool", "personal", "web3"]
 geth_http_cors_origins: ["*"]
 geth_http_virtual_hosts: ["*"]
 geth_ws_enabled: "true"
 geth_ws_host: "127.0.0.1"
 geth_ws_port: 8546
 geth_ws_origins: ["*"]
-geth_ws_api: ["admin", "eth", "debug", "miner", "net", "txpool", "personal", "web3"]
+geth_ws_api:
+  ["admin", "eth", "debug", "miner", "net", "txpool", "personal", "web3"]
 geth_ws_rpcprefix: "/"
 geth_p2p_port: 30303
 ## CLI args
@@ -57,6 +59,7 @@ geth_host_ip: ""
 geth_default_ip: "127.0.0.1"
 # --verbosity # 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail
 geth_log_verbosity: 3
+geth_log_json: "true"
 # --metrics --pprof --pprof.addr 0.0.0.0 --pprof.port 9545 \
 geth_metrics_enabled: "true"
 geth_metrics_host: "0.0.0.0"
