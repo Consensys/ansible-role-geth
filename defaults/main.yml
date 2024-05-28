@@ -56,7 +56,6 @@ geth_p2p_port: 30303
 ## CLI args
 # --nat extip:{{geth_host_ip}}
 geth_host_ip: ""
-geth_default_ip: "127.0.0.1"
 # --verbosity # 0=silent, 1=error, 2=warn, 3=info, 4=debug, 5=detail
 geth_log_verbosity: 3
 geth_log_format: "json"
