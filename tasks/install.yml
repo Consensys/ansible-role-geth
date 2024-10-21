@@ -71,7 +71,7 @@
 
 - name: Create a symlink to current
   file:
-    src: "{{ geth_install_dir }}/geth-linux-amd64-{{geth_version}}-{{geth_git_hash}}"
+    src: "{{ geth_install_dir }}/geth-linux-amd64-{{ _geth_version}}-{{ _geth_git_hash }}"
     dest: "{{ geth_current_dir }}"
     state: link
   become: true

@@ -1,4 +1,18 @@
 ---
+# Only checks whether both is not supplied. User can supply version as 'latest' and ignore
+- name: Verify geth version and git hash
+  fail:
+    msg: "Should supply geth_version and geth_git_hash parameter values"
+  when: geth_version == '' and geth_git_hash == ''
+
+- name: Include task latest
+  ansible.builtin.include_tasks: "latest.yml"
+  when: geth_version == 'latest'
+
+- name: Information
+  ansible.builtin.debug:
+    msg: "Installing geth [{{ _geth_version }}-{{ _geth_git_hash }}]"
+
 - name: Include OS and distribution specific variables
   include_vars: "{{ item }}"
   with_first_found:
@@ -20,7 +34,7 @@
       when: ansible_os_family == "Darwin"
 
 - name: Install geth
-  include_tasks: "install.yml"
+  ansible.builtin.include_tasks: "install.yml"
 
 - name: Get IP address to bind to if not provided
   include_tasks: "network.yml"

@@ -1,0 +1,27 @@
+
+- name: Get latest geth tag
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/ethereum/go-ethereum/releases/latest
+    method: GET
+    status_code: 200
+  register: _geth_latest_tag
+
+- name: Set geth version
+  ansible.builtin.set_fact:
+    _geth_tag: "{{ _geth_latest_tag.json.tag_name }}"
+    _geth_version: "{{ _geth_latest_tag.json.tag_name | regex_replace('^v', '') }}"
+
+- name: Get tag commit hash
+  ansible.builtin.uri:
+    url: https://api.github.com/repos/ethereum/go-ethereum/commits/{{ _geth_tag }}
+    method: GET
+    status_code: 200
+  register: _geth_latest_commit
+
+- name: Extract first 8 characters of commit hash
+  ansible.builtin.set_fact:
+    _geth_git_hash: "{{ _geth_latest_commit.json.sha[0:8] }}"
+
+- name: Information
+  debug:
+    msg: "Discovered geth_version [{{ _geth_version }}] and git_hash [{{ _geth_git_hash }}]"
