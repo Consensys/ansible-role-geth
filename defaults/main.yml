@@ -8,8 +8,17 @@ geth_env_opts: []
 geth_discovery_public_ip: "true"
 # internal state to maintain idempotency
 geth_state_updates: []
+
+# Settig default value to None to validate the user input
+geth_version: ""
+geth_git_hash: ""
+
+# Internal variables which can be overridden but default to external variables
+_geth_version: "{{ geth_version}}"
+_geth_git_hash: "{{ geth_git_hash }}"
+
 # Version to install
-geth_download_url: "https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-{{geth_version}}-{{geth_git_hash}}.tar.gz"
+geth_download_url: "https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-{{ _geth_version }}-{{ _geth_git_hash }}.tar.gz"
 
 # Directory paths
 geth_base_dir: "/opt/geth"
