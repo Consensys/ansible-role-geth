@@ -73,9 +73,9 @@ geth_log_format: "json"
 geth_metrics_enabled: "true"
 geth_metrics_host: "0.0.0.0"
 geth_metrics_port: 9545
-geth_cmdline_args: ""
+geth_internal_cmdline_args: ""
 # user defined list of cmd line args as a string
-geth_user_cmdline_args: ""
+geth_cmdline_args: []
 # --unlock 0 --password /config/passwords.txt \
 geth_unlock: 0
 geth_account_password_file: ""

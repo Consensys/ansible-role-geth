@@ -1,8 +1,8 @@
 ---
 - name: Add basics to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --verbosity {{geth_log_verbosity}}
       {{ _geth_version is version_compare('1.11.6', '<') | ternary('--log.json', '--log.format ' + geth_log_format)}}
       --datadir '{{geth_data_dir}}'
@@ -12,8 +12,8 @@
 
 - name: Add engine settings to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --authrpc.jwtsecret '{{geth_authrpc_jwtsecret}}'
       --authrpc.addr '{{geth_authrpc_addr}}'
       --authrpc.port {{geth_authrpc_port}}
@@ -21,29 +21,29 @@
 
 - name: Add nodekey to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --nodekey {{geth_node_private_key_file}}
   when: geth_node_private_key_file != ""
 
 - name: Add networkid to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --networkid {{ geth_network_id }}
   when: geth_network_id != ""
 
 - name: Add network to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --{{ geth_network }}
   when: geth_network != ""
 
 - name: Add metrics to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --metrics --pprof
       --pprof.addr '{{ geth_metrics_host}}'
       --pprof.port {{ geth_metrics_port}}
@@ -51,8 +51,8 @@
 
 - name: Add RPC to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --http
       --http.addr '{{geth_http_host}}'
       --http.port {{geth_http_port}}
@@ -63,8 +63,8 @@
 
 - name: Add WS to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --ws
       --ws.addr '{{geth_ws_host}}'
       --ws.port {{geth_ws_port}}
@@ -75,23 +75,23 @@
 
 - name: Add accounts to the cmdline_args
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
       --geth_unlock {{geth_unlock}}
       --geth_account_password_file {{geth_account_password_file}}
   when: geth_account_password_file != ""
 
 - name: Add custom cmdline_args to the list
   set_fact:
-    geth_cmdline_args: >
-      {{geth_cmdline_args}}
-      {{geth_user_cmdline_args|map('to_json')|join(' ')|regex_replace('"','')}}
-  when: geth_user_cmdline_args != ""
+    geth_internal_cmdline_args: >
+      {{geth_internal_cmdline_args}}
+      {{geth_cmdline_args| join(' ') }}
+  when: geth_cmdline_args != ""
 
 - name: Sanitize cmdline_args
   set_fact:
-    geth_cmdline_args: "{{geth_cmdline_args | replace('\n', '') | replace('\"', '')}}"
+    geth_internal_cmdline_args: "{{geth_internal_cmdline_args | replace('\n', '') | replace('\"', '')}}"
 
 - name: Show cmdline_args
   debug:
-    msg: "{{geth_cmdline_args}}"
+    msg: "{{geth_internal_cmdline_args}}"
