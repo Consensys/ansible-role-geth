@@ -67,12 +67,12 @@ All variables which can be overridden are stored in [defaults/main.yml](defaults
 | `geth_ws_port`               | 8546                                                                                                      | Specifies Websockets JSON-RPC listening port (TCP). Port must be exposed appropriately                                                                                                    |
 | `geth_ws_origins`            | ["all"]                                                                                                   | Comma separated list of domains from which to accept websockets requests                                                                                                                  |
 accept requests                                                                                                                   |
-| `geth_cmdline_args`     | ""                                                                                                        | Command line args that are appended to `geth_internal_cmdline_args` fom the user                                                                                                                                        |
+| `geth_cmdline_args`     | ""                                                                                                        | Command line args that are appended to `_geth_internal_cmdline_args` fom the user                                                                                                                                        |
 | `geth_env_opts`              | []                                                                                                        | Settings passed to the Geth through environment variables                                                                                                                                 |
 | `geth_unlock`                | 0                                                                                                         | Comma separated list of accounts to unlock                                                                                                                                                |
 | `geth_account_password_file` | ""                                                                                                        | Password file to use for non-interactive password input                                                                                                                                   |
 
-> :warning: **Please do not override geth_internal_cmdline_args**: Be very careful here! Only use `geth_cmdline_args` which append to `geth_internal_cmdline_args`
+> :warning: **Please do not override _geth_internal_cmdline_args**: Be very careful here! Only use `geth_cmdline_args` which append to `_geth_internal_cmdline_args`
 
 ### License
 

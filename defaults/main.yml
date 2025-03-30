@@ -73,9 +73,9 @@ geth_log_format: "json"
 geth_metrics_enabled: "true"
 geth_metrics_host: "0.0.0.0"
 geth_metrics_port: 9545
-# do not override geth_internal_cmdline_args
+# do not override _geth_internal_cmdline_args
 # this is a string
-geth_internal_cmdline_args: ""
+_geth_internal_cmdline_args: ""
 # use these to pass in cmdline_args not present in the above
 # this is a list
 geth_cmdline_args: []
