@@ -1,6 +1,6 @@
 ---
 - name: Get the default ipv4 address - and set this as the default fallback 
-  set_fact:
+  ansible.builtin.set_fact:
     geth_host_ip: >-
       {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] if
       hostvars[inventory_hostname]['ansible_default_ipv4']['address'] is
@@ -16,6 +16,6 @@
   ignore_errors: True
 
 - name: Set the host ip
-  set_fact:
+  ansible.builtin.set_fact:
     geth_host_ip: "{{ geth_public_ip_output.content }}"
   when: geth_public_ip_output.status == 200

@@ -40,7 +40,6 @@
   include_tasks: "network.yml"
   when: not geth_host_ip
 
-# also init the db
 - name: Create config
   include_tasks: "config.yml"
 

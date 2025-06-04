@@ -1,6 +1,6 @@
 ---
 - name: Create geth systemd service
-  template:
+  ansible.builtin.template:
     src: "{{ geth_systemd_template }}"
     dest: "{{ geth_systemd_dir }}/geth.service"
     owner: "root"
@@ -11,18 +11,18 @@
   register: systemd_file
 
 - name: Set updated optionally to trigger a systemd restart at the end
-  set_fact:
+  ansible.builtin.set_fact:
     geth_state_updates: "{{ geth_state_updates + ['geth.systemd_file'] }}"
   when: systemd_file is changed
 
 - name: Reload systemd to reread configs
-  systemd:
+  ansible.builtin.systemd:
     daemon_reload: yes
   become: true
   when: systemd_file is changed
 
 - name: Enable and start geth service
-  systemd:
+  ansible.builtin.systemd:
     name: geth
     state: "{{ geth_systemd_state }}"
     enabled: true

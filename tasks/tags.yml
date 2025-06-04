@@ -1,5 +1,5 @@
 - name: Set the version on a local file so it can be used by other automation
-  copy: 
+  ansible.builtin.copy: 
     content: "{{ _geth_version }}-{{ _geth_git_hash }}"
     dest: "{{ geth_version_info_file }}"
     owner: "{{ geth_user }}"

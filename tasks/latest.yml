@@ -23,5 +23,5 @@
     _geth_git_hash: "{{ _geth_latest_commit.json.sha[0:8] }}"
 
 - name: Information
-  debug:
+  ansible.builtin.debug:
     msg: "Discovered geth_version [{{ _geth_version }}] and git_hash [{{ _geth_git_hash }}]"

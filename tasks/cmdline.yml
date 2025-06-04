@@ -1,6 +1,6 @@
 ---
 - name: Add basics to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --verbosity {{geth_log_verbosity}}
@@ -11,7 +11,7 @@
       --identity '{{geth_identity}}'
 
 - name: Add engine settings to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --authrpc.jwtsecret '{{geth_authrpc_jwtsecret}}'
@@ -20,28 +20,28 @@
       --authrpc.vhosts '{{geth_authrpc_vhosts|map('to_json')|join(',')}}'
 
 - name: Add nodekey to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --nodekey {{geth_node_private_key_file}}
   when: geth_node_private_key_file != ""
 
 - name: Add networkid to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --networkid {{ geth_network_id }}
   when: geth_network_id != ""
 
 - name: Add network to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --{{ geth_network }}
   when: geth_network != ""
 
 - name: Add metrics to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --metrics --pprof
@@ -50,7 +50,7 @@
   when: geth_metrics_enabled|bool == True
 
 - name: Add RPC to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --http
@@ -62,7 +62,7 @@
   when: geth_http_enabled|bool == True
 
 - name: Add WS to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --ws
@@ -74,7 +74,7 @@
   when: geth_ws_enabled|bool == True
 
 - name: Add accounts to the cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       --geth_unlock {{geth_unlock}}
@@ -82,14 +82,14 @@
   when: geth_account_password_file != ""
 
 - name: Add custom cmdline_args to the list
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
       {{_geth_internal_cmdline_args}}
       {{geth_cmdline_args| join(' ') }}
   when: geth_cmdline_args != ""
 
 - name: Sanitize cmdline_args
-  set_fact:
+  ansible.builtin.set_fact::
     _geth_internal_cmdline_args: "{{_geth_internal_cmdline_args | replace('\n', '') | replace('\"', '')}}"
 
 - name: Show cmdline_args
