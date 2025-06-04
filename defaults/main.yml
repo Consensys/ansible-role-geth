@@ -39,6 +39,7 @@ geth_systemd_dir: /etc/systemd/system
 
 # only use this on devnets where you pass in the path to the genesis.json file. This is NOT needed for mainnet, sepolia etc
 geth_genesis_path: ""
+geth_bootnodes: ""
 # geth config file args
 # safe default network so it doesn't blow up
 geth_network: ""

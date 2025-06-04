@@ -40,6 +40,13 @@
       --{{ geth_network }}
   when: geth_network != ""
 
+- name: Add bootnodes to the cmdline_args
+  ansible.builtin.set_fact::
+    _geth_internal_cmdline_args: >
+      {{_geth_internal_cmdline_args}}
+      --bootnodes={{ geth_bootnodes }}
+  when: geth_bootnodes != ""
+
 - name: Add metrics to the cmdline_args
   ansible.builtin.set_fact::
     _geth_internal_cmdline_args: >
