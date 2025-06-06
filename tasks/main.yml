@@ -23,7 +23,7 @@
 
 - name: Set architecture
   set_fact:
-    geth_architecture: "darwin"
+    geth_system: "darwin"
   when: ansible_os_family == "Darwin"
 
 - name: Currently architecture supported

@@ -2,7 +2,7 @@
 # User and group
 geth_user: geth
 geth_group: "{{ geth_user }}"
-geth_architecture: "linux"
+geth_system: "linux"
 geth_env_opts: []
 # default to use the private ip in cloud, set this to true to use the public ip
 geth_discovery_public_ip: "true"
@@ -12,13 +12,14 @@ geth_state_updates: []
 # Settig default value to None to validate the user input
 geth_version: ""
 geth_git_hash: ""
+geth_architecture: "amd64"
 
 # Internal variables which can be overridden but default to external variables
 _geth_version: "{{ geth_version}}"
 _geth_git_hash: "{{ geth_git_hash }}"
 
 # Version to install
-geth_download_url: "https://gethstore.blob.core.windows.net/builds/geth-linux-amd64-{{ _geth_version }}-{{ _geth_git_hash }}.tar.gz"
+geth_download_url: "https://gethstore.blob.core.windows.net/builds/geth-linux-{{ geth_architecture }}-{{ _geth_version }}-{{ _geth_git_hash }}.tar.gz"
 
 # Directory paths
 geth_base_dir: "/opt/geth"
