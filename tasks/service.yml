@@ -25,7 +25,7 @@
   ansible.builtin.systemd:
     name: geth
     state: "{{ geth_systemd_state }}"
-    enabled: true
+    enabled: "{{ (geth_systemd_state!='stopped') | ternary('true', 'false') | bool }}"
   become: true
   when: ( geth_state_updates|length > 0 ) and
     ( geth_managed_service ) and
