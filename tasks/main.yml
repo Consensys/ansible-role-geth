@@ -5,6 +5,14 @@
     msg: "Should supply geth_version and geth_git_hash parameter values"
   when: geth_version == '' and geth_git_hash == ''
 
+- name: Fetch architecture of the host
+  debug:
+    var: ansible_facts.architecture
+
+- name: Set system architecture to download appropriate binary
+  set_fact:
+    geth_architecture: "{{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }}"
+
 - name: Include task latest
   ansible.builtin.include_tasks: "latest.yml"
   when: geth_version == 'latest'
