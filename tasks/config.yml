@@ -6,7 +6,7 @@
     state: directory
     owner: "{{ geth_user }}"
     group: "{{ geth_group }}"
-    recurse: yes
+    recurse: true
   become: true
 
 - name: Create data directory
@@ -15,7 +15,7 @@
     state: directory
     owner: "{{ geth_user }}"
     group: "{{ geth_group }}"
-    recurse: no
+    recurse: true
   become: true
   
 - name: Run the geth init 
