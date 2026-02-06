@@ -1,7 +1,41 @@
 ---
+- name: install | Lookup geth user
+  getent:
+    database: passwd
+    key: "{{ geth_user }}"
+  register: geth_user_entry
+  failed_when: false
+
+- name: install | Extract current UID (only if user exists)
+  set_fact:
+    geth_current_uid: "{{ geth_user_entry.ansible_facts.getent_passwd[geth_user][1] | int }}"
+  when: not geth_user_entry.failed
+
+- name: install | Determine if UID update is needed
+  set_fact:
+    geth_uid_needs_update: "{{ geth_current_uid != geth_uid }}"
+  when: not geth_user_entry.failed
+
+- name: install | Stop enabled geth services if UID needs update
+  service:
+    name: "geth"
+    state: stopped
+  when:
+    - not geth_user_entry.failed
+    - geth_uid_needs_update
+  become: true
+
+- name: install | Set updated optionally to trigger a systemd restart at the end
+  set_fact:
+    geth_state_updates: "{{ geth_state_updates + ['geth.uid'] }}"
+  when:
+    - not geth_user_entry.failed
+    - geth_uid_needs_update
+
 - name: Ensure geth group exists
   ansible.builtin.group:
     name: "{{ geth_group }}"
+    gid: "{{ geth_gid }}"    
     state: present
   become: true
 
@@ -9,6 +43,7 @@
   ansible.builtin.user:
     comment:  geth client user
     name: "{{ geth_user }}"
+    uid: "{{ geth_uid }}"
     group: "{{ geth_group }}"
   become: true
 

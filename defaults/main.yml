@@ -2,6 +2,9 @@
 # User and group
 geth_user: geth
 geth_group: "{{ geth_user }}"
+geth_uid: 1512
+geth_gid: 1512
+
 geth_system: "linux"
 geth_env_opts: []
 # default to use the private ip in cloud, set this to true to use the public ip
