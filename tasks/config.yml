@@ -1,23 +1,6 @@
 ---
 #
-- name: Create configuration directory
-  ansible.builtin.file:
-    path: "{{ geth_config_dir }}"
-    state: directory
-    owner: "{{ geth_user }}"
-    group: "{{ geth_group }}"
-    recurse: true
-  become: true
 
-- name: Create data directory
-  ansible.builtin.file:
-    path: "{{ geth_data_dir }}"
-    state: directory
-    owner: "{{ geth_user }}"
-    group: "{{ geth_group }}"
-    recurse: true
-  become: true
-  
 - name: Run the geth init 
   ansible.builtin.shell: >
     {{ geth_current_dir }}/geth init --datadir={{geth_data_dir}} {{geth_genesis_path}}

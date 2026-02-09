@@ -51,28 +51,20 @@
     group: "{{ geth_group }}"
   become: true
 
-- name: Create base directory
-  ansible.builtin.file:
-    path: "{{ geth_base_dir }}"
-    state: directory
-    owner: "{{ geth_user }}"
-    group: "{{ geth_group }}"
-  become: true
 
-- name: Create install directory
-  ansible.builtin.file:
-    path: "{{ geth_install_dir }}"
+- name: Create directories
+  file:
+    path: "{{ item }}"
     state: directory
     owner: "{{ geth_user }}"
     group: "{{ geth_group }}"
-  become: true
-
-- name: Create log directory
-  ansible.builtin.file:
-    path: "{{ geth_log_dir }}"
-    state: directory
-    owner: "{{ geth_user }}"
-    group: "{{ geth_group }}"
+    recurse: true
+  loop:
+    - "{{ geth_base_dir }}"
+    - "{{ geth_install_dir }}"
+    - "{{ geth_config_dir }}"
+    - "{{ geth_log_dir }}"
+    - "{{ geth_data_dir }}"
   become: true
 
 - name: Setup logrotate
