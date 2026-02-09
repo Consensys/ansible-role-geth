@@ -10,7 +10,9 @@ Environment=HOME=/home/{{ geth_user }}
 Environment='GETH_OPTS={{geth_env_opts|map('to_json')|join(' ')}}'
 {% endif %}
 Type=simple
-ExecStart=/bin/sh -c "{{ geth_current_dir }}/geth --nat extip:{{geth_host_ip}} {{_geth_internal_cmdline_args}} >> {{geth_log_dir}}/geth.log 2>&1"
+ExecStart=/bin/sh -c "{{ geth_current_dir }}/geth --nat extip:{{geth_host_ip}} {{_geth_internal_cmdline_args}}"
+StandardOutput=append:{{geth_log_dir}}/geth.log
+StandardError=append:{{geth_log_dir}}/geth.log
 SuccessExitStatus=143
 Restart=on-failure
 RestartSec=10s
