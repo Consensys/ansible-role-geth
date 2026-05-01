@@ -8,17 +8,17 @@ geth_gid: 1512
 geth_system: "linux"
 geth_env_opts: []
 # default to use the private ip in cloud, set this to true to use the public ip
-geth_discovery_public_ip: "true"
+geth_discovery_public_ip: true
 # internal state to maintain idempotency
 geth_state_updates: []
 
-# Settig default value to None to validate the user input
+# Setting default value to None to validate the user input
 geth_version: ""
 geth_git_hash: ""
 geth_architecture: "amd64"
 
 # Internal variables which can be overridden but default to external variables
-_geth_version: "{{ geth_version}}"
+_geth_version: "{{ geth_version }}"
 _geth_git_hash: "{{ geth_git_hash }}"
 
 # Version to install
@@ -54,15 +54,15 @@ geth_authrpc_jwtsecret: "/path/to/jwtsecret"
 geth_authrpc_addr: "127.0.0.1"
 geth_authrpc_port: 8551
 geth_authrpc_vhosts: "*"
-geth_no_usb: "true"
-geth_http_enabled: "true"
+geth_no_usb: true
+geth_http_enabled: true
 geth_http_host: "127.0.0.1"
 geth_http_port: 8545
 geth_http_api:
   ["admin", "eth", "debug", "miner", "net", "txpool", "personal", "web3"]
 geth_http_cors_origins: ["*"]
 geth_http_virtual_hosts: ["*"]
-geth_ws_enabled: "true"
+geth_ws_enabled: true
 geth_ws_host: "127.0.0.1"
 geth_ws_port: 8546
 geth_ws_origins: ["*"]
@@ -77,7 +77,7 @@ geth_host_ip: ""
 geth_log_verbosity: 3
 geth_log_format: "json"
 # --metrics --pprof --pprof.addr 0.0.0.0 --pprof.port 9545 \
-geth_metrics_enabled: "true"
+geth_metrics_enabled: true
 geth_metrics_host: "0.0.0.0"
 geth_metrics_port: 9545
 # do not override _geth_internal_cmdline_args

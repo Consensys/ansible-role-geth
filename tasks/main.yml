@@ -1,16 +1,15 @@
 ---
-# Only checks whether both is not supplied. User can supply version as 'latest' and ignore
 - name: Verify geth version and git hash
-  fail:
+  ansible.builtin.fail:
     msg: "Should supply geth_version and geth_git_hash parameter values"
   when: geth_version == '' and geth_git_hash == ''
 
 - name: Fetch architecture of the host
-  debug:
+  ansible.builtin.debug:
     var: ansible_facts.architecture
 
 - name: Set system architecture to download appropriate binary
-  set_fact:
+  ansible.builtin.set_fact:
     geth_architecture: "{{ 'arm64' if ansible_facts.architecture == 'aarch64' else 'amd64' }}"
 
 - name: Include task latest
@@ -22,22 +21,22 @@
     msg: "Installing geth [{{ _geth_version }}-{{ _geth_git_hash }}]"
 
 - name: Include OS and distribution specific variables
-  include_vars: "{{ item }}"
+  ansible.builtin.include_vars: "{{ item }}"
   with_first_found:
     - files:
-        - "{{ ansible_distribution|lower }}.yml"
-        - "{{ ansible_os_family|lower }}.yml"
+        - "{{ ansible_distribution | lower }}.yml"
+        - "{{ ansible_os_family | lower }}.yml"
       skip: true
 
 - name: Set architecture
-  set_fact:
+  ansible.builtin.set_fact:
     geth_system: "darwin"
   when: ansible_os_family == "Darwin"
 
 - name: Currently architecture supported
   block:
     - name: Check that we are running on linux
-      fail:
+      ansible.builtin.fail:
         msg: Please run this on linux, OSX is not yet supported
       when: ansible_os_family == "Darwin"
 
@@ -45,17 +44,17 @@
   ansible.builtin.include_tasks: "install.yml"
 
 - name: Get IP address to bind to if not provided
-  include_tasks: "network.yml"
+  ansible.builtin.include_tasks: "network.yml"
   when: not geth_host_ip
 
 - name: Create config
-  include_tasks: "config.yml"
+  ansible.builtin.include_tasks: "config.yml"
 
 - name: Create cmd line args
-  include_tasks: "cmdline.yml"
+  ansible.builtin.include_tasks: "cmdline.yml"
 
 - name: Create geth service
-  include_tasks: "service.yml"
+  ansible.builtin.include_tasks: "service.yml"
 
 - name: Set version info on a local file
-  include_tasks: "tags.yml"
+  ansible.builtin.include_tasks: "tags.yml"

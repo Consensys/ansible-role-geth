@@ -1,19 +1,19 @@
 ---
-- name: Get the default ipv4 address - and set this as the default fallback 
+- name: Get the default ipv4 address - and set this as the default fallback
   ansible.builtin.set_fact:
     geth_host_ip: >-
       {{ hostvars[inventory_hostname]['ansible_default_ipv4']['address'] if
       hostvars[inventory_hostname]['ansible_default_ipv4']['address'] is
       defined else '127.0.0.1' }}
 
-- name: Fetch public IP 
-  uri:
+- name: Fetch public IP
+  ansible.builtin.uri:
     url: http://ifconfig.me/ip
     method: GET
-    return_content: yes
+    return_content: true
     status_code: 200
   register: geth_public_ip_output
-  ignore_errors: True
+  ignore_errors: true
 
 - name: Set the host ip
   ansible.builtin.set_fact:

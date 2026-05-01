@@ -1,27 +1,28 @@
 ---
 galaxy_info:
-  author: Consensys 
+  author: Consensys
   role_name: geth
   description: Geth is an ethereum client
   company: Consensys
-  license: license (Apache)
-  min_ansible_version: 2.6
+  license: Apache-2.0
+  min_ansible_version: "2.14"
   platforms:
     - name: Debian
       versions:
         - bookworm
         - bullseye
-        - buster
     - name: Ubuntu
       versions:
         - jammy
-        - bionic
-        - xenial
+        - noble
     - name: Fedora
       versions:
-        - 39
-        - 38
-        - 37
+        - "39"
+        - "40"
+    - name: EL
+      versions:
+        - "8"
+        - "9"
   galaxy_tags:
     - geth
     - blockchain

@@ -6,8 +6,9 @@
     owner: "root"
     group: "root"
   become: true
-  when: ( geth_managed_service ) and
-    ( ansible_os_family != "Darwin" )
+  when:
+    - geth_managed_service
+    - ansible_os_family != "Darwin"
   register: systemd_file
 
 - name: Set updated optionally to trigger a systemd restart at the end
@@ -17,7 +18,7 @@
 
 - name: Reload systemd to reread configs
   ansible.builtin.systemd:
-    daemon_reload: yes
+    daemon_reload: true
   become: true
   when: systemd_file is changed
 
@@ -25,8 +26,9 @@
   ansible.builtin.systemd:
     name: geth
     state: "{{ geth_systemd_state }}"
-    enabled: "{{ (geth_systemd_state!='stopped') | ternary('true', 'false') | bool }}"
+    enabled: "{{ (geth_systemd_state != 'stopped') | ternary(true, false) }}"
   become: true
-  when: ( geth_state_updates|length > 0 ) and
-    ( geth_managed_service ) and
-    ( ansible_os_family != "Darwin" )
+  when:
+    - geth_state_updates | length > 0
+    - geth_managed_service
+    - ansible_os_family != "Darwin"

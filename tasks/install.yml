@@ -1,27 +1,27 @@
 ---
 - name: install | Lookup geth user
-  getent:
+  ansible.builtin.getent:
     database: passwd
     key: "{{ geth_user }}"
   register: geth_user_entry
   failed_when: false
 
 - name: install | Determine if geth user exists
-  set_fact:
+  ansible.builtin.set_fact:
     geth_user_exists: "{{ geth_user in (geth_user_entry.ansible_facts.getent_passwd | default({})) }}"
 
 - block:
 
   - name: install | Extract current UID (only if user exists)
-    set_fact:
+    ansible.builtin.set_fact:
       geth_current_uid: "{{ geth_user_entry.ansible_facts.getent_passwd[geth_user][1] | int }}"
 
   - name: install | Determine if UID update is needed
-    set_fact:
+    ansible.builtin.set_fact:
       geth_uid_needs_update: "{{ geth_current_uid != geth_uid }}"
 
   - name: install | Stop enabled geth services if UID needs update
-    service:
+    ansible.builtin.service:
       name: "geth"
       state: stopped
     when:
@@ -29,7 +29,7 @@
     become: true
 
   - name: install | Set updated optionally to trigger a systemd restart at the end
-    set_fact:
+    ansible.builtin.set_fact:
       geth_state_updates: "{{ geth_state_updates + ['geth.uid'] }}"
     when:
       - geth_uid_needs_update
@@ -39,21 +39,20 @@
 - name: Ensure geth group exists
   ansible.builtin.group:
     name: "{{ geth_group }}"
-    gid: "{{ geth_gid }}"    
+    gid: "{{ geth_gid }}"
     state: present
   become: true
 
 - name: Create geth user
   ansible.builtin.user:
-    comment:  geth client user
+    comment: geth client user
     name: "{{ geth_user }}"
     uid: "{{ geth_uid }}"
     group: "{{ geth_group }}"
   become: true
 
-
 - name: Create directories
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     owner: "{{ geth_user }}"
@@ -74,13 +73,13 @@
   become: true
 
 - name: Extract geth source to install directory
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ geth_download_url }}"
-    remote_src: "{{ true }}"
+    remote_src: true
     dest: "{{ geth_install_dir }}"
     owner: "{{ geth_user }}"
     group: "{{ geth_group }}"
-    mode: '0775'
+    mode: "0775"
   become: true
   register: extract_src
 
@@ -89,20 +88,20 @@
     geth_state_updates: "{{ geth_state_updates + ['geth.install_dir'] }}"
   when: extract_src is changed
 
-# will throw error the first time you install since the service isnt present
 - name: Stop geth systemd service if running
   ansible.builtin.systemd:
     name: geth
     state: stopped
-  when: ( extract_src is changed ) and
-    ( geth_managed_service ) and
-    ( ansible_os_family != "Darwin" )
+  when:
+    - extract_src is changed
+    - geth_managed_service
+    - ansible_os_family != "Darwin"
   become: true
   ignore_errors: true
 
 - name: Create a symlink to current
   ansible.builtin.file:
-    src: "{{ geth_install_dir }}/geth-linux-amd64-{{ _geth_version}}-{{ _geth_git_hash }}"
+    src: "{{ geth_install_dir }}/geth-linux-amd64-{{ _geth_version }}-{{ _geth_git_hash }}"
     dest: "{{ geth_current_dir }}"
     state: link
   become: true
