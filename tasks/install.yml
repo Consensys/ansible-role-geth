@@ -10,40 +10,51 @@
   ansible.builtin.set_fact:
     geth_user_exists: "{{ geth_user in (geth_user_entry.ansible_facts.getent_passwd | default({})) }}"
 
-- block:
+- name: install | If geth user exists - check if the UID matches the expected value
+  when: geth_user_exists | bool
+  block:
+    - name: install | Extract current UID
+      ansible.builtin.set_fact:
+        geth_current_uid: "{{ geth_user_entry.ansible_facts.getent_passwd[geth_user][1] | int }}"
 
-  - name: install | Extract current UID (only if user exists)
-    ansible.builtin.set_fact:
-      geth_current_uid: "{{ geth_user_entry.ansible_facts.getent_passwd[geth_user][1] | int }}"
+    - name: install | Determine if UID update is needed
+      ansible.builtin.set_fact:
+        geth_uid_needs_update: "{{ geth_current_uid != geth_uid }}"
 
-  - name: install | Determine if UID update is needed
-    ansible.builtin.set_fact:
-      geth_uid_needs_update: "{{ geth_current_uid != geth_uid }}"
 
-  - name: install | Stop enabled geth services if UID needs update
-    ansible.builtin.service:
-      name: "geth"
-      state: stopped
-    when:
-      - geth_uid_needs_update
-    become: true
+- name: install | Populate service facts
+  ansible.builtin.service_facts:
 
-  - name: install | Set updated optionally to trigger a systemd restart at the end
-    ansible.builtin.set_fact:
-      geth_state_updates: "{{ geth_state_updates + ['geth.uid'] }}"
-    when:
-      - geth_uid_needs_update
+# This will ignore the case when geth is manually stopped - it assumes that is a mistake
+# If you are manually stopping and updating geth - disable the systemd service
+- name: install | Debug geth service state
+  ansible.builtin.debug:
+    var: ansible_facts.services['geth.service']
 
-  when: geth_user_exists
+- name: install | Halt the service if its running while we update
+  ansible.builtin.systemd:
+    name: geth
+    state: "stopped"
+  become: true
+  register: geth_systemd_stopped
+  when: (ansible_facts.services['geth.service'] is defined) and
+        ((ansible_facts.services['geth.service'].status == "enabled") or
+         (geth_uid_needs_update | default(false) | bool))
 
-- name: Ensure geth group exists
+- name: install | Set updated optionally to trigger a systemd restart at the end
+  ansible.builtin.set_fact:
+    geth_state_updates: "{{ geth_state_updates + ['geth.running_service'] }}"
+  when: (geth_systemd_stopped is defined) and
+        (geth_systemd_stopped.state | default('') == "stopped")
+
+- name: install | Ensure geth group exists
   ansible.builtin.group:
     name: "{{ geth_group }}"
     gid: "{{ geth_gid }}"
     state: present
   become: true
 
-- name: Create geth user
+- name: install | Create geth user
   ansible.builtin.user:
     comment: geth client user
     name: "{{ geth_user }}"
@@ -51,7 +62,7 @@
     group: "{{ geth_group }}"
   become: true
 
-- name: Create directories
+- name: install | Create directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -66,13 +77,13 @@
     - "{{ geth_data_dir }}"
   become: true
 
-- name: Setup logrotate
+- name: install | Setup logrotate
   ansible.builtin.template:
     src: "logrotate/geth"
     dest: "/etc/logrotate.d/geth"
   become: true
 
-- name: Extract geth source to install directory
+- name: install | Extract geth source to install directory
   ansible.builtin.unarchive:
     src: "{{ geth_download_url }}"
     remote_src: true
@@ -83,23 +94,12 @@
   become: true
   register: extract_src
 
-- name: Set updated optionally to trigger a systemd restart at the end
+- name: install | Set updated optionally to trigger a systemd restart at the end
   ansible.builtin.set_fact:
     geth_state_updates: "{{ geth_state_updates + ['geth.install_dir'] }}"
   when: extract_src is changed
 
-- name: Stop geth systemd service if running
-  ansible.builtin.systemd:
-    name: geth
-    state: stopped
-  when:
-    - extract_src is changed
-    - geth_managed_service
-    - ansible_os_family != "Darwin"
-  become: true
-  ignore_errors: true
-
-- name: Create a symlink to current
+- name: install | Create a symlink to current
   ansible.builtin.file:
     src: "{{ geth_install_dir }}/geth-linux-amd64-{{ _geth_version }}-{{ _geth_git_hash }}"
     dest: "{{ geth_current_dir }}"
